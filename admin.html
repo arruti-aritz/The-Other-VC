@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Other VC — News Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Tuffy:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="logomark%20grey.png">
+  <style>
+    :root {
+      --black: #0f1416;
+      --white: #f5f5f5;
+      --silver: #d9d9db;
+      --accent: #38AAAB;
+      --muted: #5b666b;
+      --danger: #e05c5c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Tuffy', serif;
+      background: #f0f1f3;
+      color: var(--black);
+      min-height: 100vh;
+    }
+
+    /* Top bar */
+    .admin-topbar {
+      background: var(--black);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .admin-topbar-title {
+      font-family: 'Syncopate', sans-serif;
+      font-size: .7rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Syncopate', sans-serif;
+      font-size: .62rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.6);
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 999px;
+      padding: 6px 14px;
+      transition: .2s;
+    }
+    .btn-back:hover { color: var(--white); border-color: rgba(255,255,255,.4); }
+
+    /* Body */
+    .admin-body {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .admin-page-title {
+      font-family: 'Syncopate', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 40px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(15,20,22,.1);
+    }
+
+    /* Form */
+    .news-form {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 48px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.06);
+    }
+    .news-form h2 {
+      font-family: 'Syncopate', sans-serif;
+      font-size: .85rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-bottom: 24px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-family: 'Syncopate', sans-serif;
+      font-size: .58rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(15,20,22,.14);
+      font-family: 'Tuffy', serif;
+      font-size: .95rem;
+      color: var(--black);
+      background: #fafafa;
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+    }
+    .form-group input[type="file"] {
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--accent); background: white; }
+    .form-group textarea { resize: vertical; min-height: 88px; }
+    .form-full { grid-column: 1 / -1; }
+
+    .img-preview {
+      display: none;
+      margin-top: 8px;
+      width: 100%;
+      max-height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(15,20,22,.1);
+    }
+    .img-preview.visible { display: block; }
+
+    .btn-add {
+      margin-top: 12px;
+      padding: 12px 28px;
+      border-radius: 999px;
+      border: none;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Syncopate', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-add:hover { background: #2a3236; }
+    .btn-add:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* List */
+    .section-title {
+      font-family: 'Syncopate', sans-serif;
+      font-size: .7rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(15,20,22,.1);
+    }
+    .news-list-wrap { display: flex; flex-direction: column; gap: 12px; }
+    .news-list-item {
+      background: white;
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.04);
+    }
+    .news-item-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      object-fit: cover;
+    }
+    .news-item-info { flex: 1; min-width: 0; }
+    .news-item-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .news-item-cat {
+      font-family: 'Syncopate', sans-serif;
+      font-size: .58rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(56,170,171,.1);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .news-item-date { font-family: 'Syncopate', sans-serif; font-size: .58rem; color: var(--muted); }
+    .news-item-title { font-family: 'Syncopate', sans-serif; font-size: .8rem; color: var(--black); margin-bottom: 3px; }
+    .news-item-excerpt {
+      font-size: .86rem; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 480px;
+    }
+    .btn-delete {
+      flex-shrink: 0;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(224,92,92,.3);
+      background: none;
+      color: var(--danger);
+      font-family: 'Syncopate', sans-serif;
+      font-size: .58rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .btn-delete:hover { background: rgba(224,92,92,.08); border-color: var(--danger); }
+    .empty-state {
+      text-align: center; padding: 40px; color: var(--muted);
+      font-family: 'Syncopate', sans-serif; font-size: .7rem; letter-spacing: .1em;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--black); color: var(--white);
+      padding: 13px 20px; border-radius: 10px;
+      font-family: 'Syncopate', sans-serif; font-size: .68rem; letter-spacing: .08em;
+      opacity: 0; transform: translateY(8px); transition: .3s ease; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <script>
+    (function(){
+      const KEY = 'ovc_admin_auth';
+      const PWD = 'othervc2026';
+      if(sessionStorage.getItem(KEY) !== '1'){
+        const entered = prompt('Admin password:');
+        if(entered !== PWD){
+          document.location.href = 'index.html';
+        } else {
+          sessionStorage.setItem(KEY, '1');
+        }
+      }
+    })();
+  </script>
+
+  <div class="admin-topbar">
+    <span class="admin-topbar-title">News Manager</span>
+    <a href="index.html" class="btn-back">&#8592; Back to site</a>
+  </div>
+
+  <div class="admin-body">
+
+    <p class="admin-page-title">Add &amp; manage news</p>
+
+    <!-- Add form -->
+    <div class="news-form">
+      <h2>New item</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" id="f-title" placeholder="Headline">
+        </div>
+        <div class="form-group">
+          <label>Category *</label>
+          <select id="f-category">
+            <option value="Other VC">Other VC</option>
+            <option value="Growbyte">Growbyte</option>
+            <option value="Instadeck">Instadeck</option>
+            <option value="Rainoc">Rainoc</option>
+            <option value="Ocurca">Ocurca</option>
+            <option value="EST8">EST8</option>
+            <option value="Darwic">Darwic</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="text" id="f-date" placeholder="e.g. April 2026">
+        </div>
+        <div class="form-group">
+          <label>Image</label>
+          <input type="file" id="f-img" accept="image/*">
+          <img id="img-preview" class="img-preview" alt="Preview">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group form-full">
+          <label>Excerpt *</label>
+          <textarea id="f-excerpt" placeholder="Short summary (1–2 sentences)"></textarea>
+        </div>
+      </div>
+      <button class="btn-add" id="btn-add" onclick="addItem()">+ Add news item</button>
+    </div>
+
+    <!-- List -->
+    <p class="section-title">Published news</p>
+    <div class="news-list-wrap" id="news-list"></div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    /* ── image preview ── */
+    document.getElementById('f-img').addEventListener('change', function() {
+      const file = this.files[0];
+      const preview = document.getElementById('img-preview');
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.classList.add('visible');
+      } else {
+        preview.classList.remove('visible');
+      }
+    });
+
+    /* ── helpers ── */
+    const COLORS = {
+      'Growbyte': 'linear-gradient(135deg,#9ec9ff 0%,#d9ecff 100%)',
+      'Instadeck':'linear-gradient(135deg,#c8b5ff 0%,#ebe4ff 100%)',
+      'Rainoc':   'linear-gradient(135deg,#8fd8cb 0%,#dffaf4 100%)',
+      'Ocurca':   'linear-gradient(135deg,#efc88f 0%,#fff1dc 100%)',
+      'EST8':     'linear-gradient(135deg,#baa38d 0%,#efe2d5 100%)',
+      'Darwic':   'linear-gradient(135deg,#8fcac2 0%,#e1f7f4 100%)',
+      'Other VC': 'linear-gradient(135deg,#20272b 0%,#2a3236 100%)'
+    };
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    /* ── load list ── */
+    async function renderList() {
+      const wrap = document.getElementById('news-list');
+      wrap.innerHTML = '<p class="empty-state">Loading...</p>';
+      const { data, error } = await db.from('news').select('*').order('created_at', { ascending: false });
+      if (error) { wrap.innerHTML = '<p class="empty-state">Could not load items.</p>'; return; }
+      if (!data.length) { wrap.innerHTML = '<p class="empty-state">No news items yet.</p>'; return; }
+      wrap.innerHTML = data.map(item => `
+        <div class="news-list-item">
+          ${item.img
+            ? `<img src="${item.img}" class="news-item-thumb" alt="">`
+            : `<div class="news-item-thumb" style="background:${item.color || '#ccc'}"></div>`}
+          <div class="news-item-info">
+            <div class="news-item-meta">
+              <span class="news-item-cat">${item.category}</span>
+              <span class="news-item-date">${item.date}</span>
+            </div>
+            <p class="news-item-title">${item.title}</p>
+            <p class="news-item-excerpt">${item.excerpt}</p>
+          </div>
+          <button class="btn-delete" onclick="deleteItem('${item.id}')">Delete</button>
+        </div>
+      `).join('');
+    }
+
+    /* ── add ── */
+    async function addItem() {
+      const title   = document.getElementById('f-title').value.trim();
+      const excerpt = document.getElementById('f-excerpt').value.trim();
+      const cat     = document.getElementById('f-category').value;
+      const date    = document.getElementById('f-date').value.trim() || new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+      const file    = document.getElementById('f-img').files[0];
+
+      if (!title || !excerpt) { toast('Title and excerpt are required.'); return; }
+
+      const btn = document.getElementById('btn-add');
+      btn.disabled = true;
+      btn.textContent = 'Uploading…';
+
+      let imgUrl = '';
+      if (file) {
+        const ext  = file.name.split('.').pop();
+        const path = `${Date.now()}.${ext}`;
+        const { data: uploaded, error: upErr } = await db.storage
+          .from('news-images')
+          .upload(path, file, { cacheControl: '3600', upsert: false });
+        if (upErr) { toast('Image upload failed.'); btn.disabled = false; btn.textContent = '+ Add news item'; return; }
+        const { data: urlData } = db.storage.from('news-images').getPublicUrl(path);
+        imgUrl = urlData.publicUrl;
+      }
+
+      const { error } = await db.from('news').insert([{
+        date, category: cat, title, excerpt,
+        color: COLORS[cat] || COLORS['Other VC'],
+        img: imgUrl
+      }]);
+
+      btn.disabled = false;
+      btn.textContent = '+ Add news item';
+
+      if (error) { toast('Could not save item.'); return; }
+
+      toast('News item added.');
+      document.getElementById('f-title').value = '';
+      document.getElementById('f-excerpt').value = '';
+      document.getElementById('f-date').value = '';
+      document.getElementById('f-img').value = '';
+      document.getElementById('img-preview').classList.remove('visible');
+      renderList();
+    }
+
+    /* ── delete ── */
+    async function deleteItem(id) {
+      if (!confirm('Delete this news item?')) return;
+      const { error } = await db.from('news').delete().eq('id', id);
+      if (error) { toast('Could not delete.'); return; }
+      toast('Deleted.');
+      renderList();
+    }
+
+    renderList();
+  </script>
+</body>
+</html>

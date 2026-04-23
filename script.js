@@ -5,14 +5,41 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   /* ------------------------------------------
-     1. Scroll-reveal via IntersectionObserver
+     1. Assign varied animation classes
   ------------------------------------------ */
-  const revealEls = document.querySelectorAll(
-    '.reveal, .section, .portfolio-area, .hero-content, ' +
-    '.panel-card, .longform-card, .team-person-card, ' +
-    '.contact-page-card, .news-placeholder-card, .intro-grid, ' +
-    '.page-block-layout, .home-block-inner, .contact-block, ' +
-    '.news-carousel-wrap, .cta-section'
+  const fadeUpEls = document.querySelectorAll(
+    '.intro-grid, .hero-content, .cta-section, .contact-email-section, ' +
+    '.news-carousel-wrap, .hp-news-section, .contact-reasons-grid, ' +
+    '.vision-why, .team-single-wrap'
+  );
+  fadeUpEls.forEach(el => el.classList.add('anim-fade-up'));
+
+  const fadeLeftEls = document.querySelectorAll(
+    '.home-block-normal .home-block-text, .vision-split-text, ' +
+    '.vision-pillar:first-child, .contact-direct-copy'
+  );
+  fadeLeftEls.forEach(el => el.classList.add('anim-fade-left'));
+
+  const fadeRightEls = document.querySelectorAll(
+    '.home-block-reversed .home-block-text, .home-block-normal .home-block-visual, ' +
+    '.vision-split-visual, .contact-direct-visual'
+  );
+  fadeRightEls.forEach(el => el.classList.add('anim-fade-right'));
+
+  const scaleEls = document.querySelectorAll(
+    '.panel-card, .longform-card, .news-card, .news-article-row, ' +
+    '.contact-reason-card, .team-person-card, .project-logo-wrap'
+  );
+  scaleEls.forEach(el => el.classList.add('anim-scale'));
+
+  const fadeDownEls = document.querySelectorAll('.hero-kicker, .vision-label');
+  fadeDownEls.forEach(el => el.classList.add('anim-fade-down'));
+
+  /* ------------------------------------------
+     2. IntersectionObserver — trigger all anim-* classes
+  ------------------------------------------ */
+  const allAnimEls = document.querySelectorAll(
+    '.anim-fade-up, .anim-fade-left, .anim-fade-right, .anim-scale, .anim-fade-down'
   );
 
   const observer = new IntersectionObserver((entries) => {
@@ -24,26 +51,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, { threshold: 0.10 });
 
-  revealEls.forEach(el => {
-    el.classList.add('will-reveal');
-    observer.observe(el);
-  });
+  allAnimEls.forEach(el => observer.observe(el));
 
   /* ------------------------------------------
-     2. Staggered children reveal
+     3. Staggered children (grids)
   ------------------------------------------ */
   const staggerParents = document.querySelectorAll(
-    '.two-panel-grid, .longform-grid, .contact-reasons-grid, .news-grid'
+    '.two-panel-grid, .longform-grid, .contact-reasons-grid, ' +
+    '.news-grid, .vision-pillars'
   );
 
   const staggerObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const children = entry.target.children;
-        Array.from(children).forEach((child, i) => {
-          child.style.transitionDelay = `${i * 0.12}s`;
-          child.classList.add('will-reveal');
-          setTimeout(() => child.classList.add('in-view'), 10);
+        Array.from(entry.target.children).forEach((child, i) => {
+          child.style.transitionDelay = `${i * 0.13}s`;
+          child.classList.add('anim-scale');
+          setTimeout(() => child.classList.add('in-view'), 20);
         });
         staggerObserver.unobserve(entry.target);
       }
@@ -53,37 +77,29 @@ document.addEventListener('DOMContentLoaded', () => {
   staggerParents.forEach(el => staggerObserver.observe(el));
 
   /* ------------------------------------------
-     3. Active nav link highlight
+     4. Active nav link
   ------------------------------------------ */
   const currentPath = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a').forEach(link => {
-    const href = link.getAttribute('href');
-    if (href === currentPath) {
-      link.classList.add('nav-active');
-    }
+    if (link.getAttribute('href') === currentPath) link.classList.add('nav-active');
   });
-
-  /* ------------------------------------------
-     4. Parallax-lite on hero
-  ------------------------------------------ */
-  const hero = document.querySelector('.hero');
-  if (hero) {
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      hero.style.backgroundPositionY = `${y * 0.35}px`;
-    }, { passive: true });
-  }
 
   /* ------------------------------------------
      5. Header shadow on scroll
   ------------------------------------------ */
   const header = document.querySelector('.site-header');
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 20) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
+    header.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
+
+  /* ------------------------------------------
+     6. Subtle parallax on hero
+  ------------------------------------------ */
+  const hero = document.querySelector('.hero');
+  if (hero) {
+    window.addEventListener('scroll', () => {
+      hero.style.backgroundPositionY = `${window.scrollY * 0.3}px`;
+    }, { passive: true });
+  }
 
 });
