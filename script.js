@@ -77,7 +77,33 @@ document.addEventListener('DOMContentLoaded', () => {
   staggerParents.forEach(el => staggerObserver.observe(el));
 
   /* ------------------------------------------
-     4. Active nav link
+     4. Burger menu (overlay appended to body)
+  ------------------------------------------ */
+  const burger   = document.getElementById('nav-burger');
+  const navLinks = document.getElementById('nav-links');
+  if (burger && navLinks) {
+    const overlay = document.createElement('div');
+    overlay.className = 'mobile-nav-overlay';
+    navLinks.querySelectorAll('a').forEach(a => {
+      const clone = a.cloneNode(true);
+      overlay.appendChild(clone);
+    });
+    document.body.appendChild(overlay);
+
+    const toggle = (open) => {
+      overlay.classList.toggle('open', open);
+      burger.classList.toggle('active', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+
+    burger.addEventListener('click', () => toggle(!overlay.classList.contains('open')));
+    overlay.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => toggle(false));
+    });
+  }
+
+  /* ------------------------------------------
+     5. Active nav link
   ------------------------------------------ */
   const currentPath = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a').forEach(link => {
@@ -85,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ------------------------------------------
-     5. Header shadow on scroll
+     6. Header shadow on scroll
   ------------------------------------------ */
   const header = document.querySelector('.site-header');
   window.addEventListener('scroll', () => {
@@ -93,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { passive: true });
 
   /* ------------------------------------------
-     6. Subtle parallax on hero
+     7. Subtle parallax on hero
   ------------------------------------------ */
   const hero = document.querySelector('.hero');
   if (hero) {

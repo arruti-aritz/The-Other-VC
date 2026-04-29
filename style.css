@@ -696,10 +696,58 @@ a{
   }
 }
 
+/* ── Burger button ── */
+.nav-burger{
+  display:none;
+  background:none;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:8px;
+  padding:8px 9px;
+  cursor:pointer;
+  color:var(--white);
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  transition:border-color .2s;
+}
+.nav-burger:hover{ border-color:rgba(255,255,255,.4); }
+.nav-burger svg{ width:20px; height:20px; display:block; }
+.nav-burger .icon-close{ display:none; }
+.nav-burger.active .icon-open{ display:none; }
+.nav-burger.active .icon-close{ display:block; }
+
+/* ── Mobile nav overlay (appended to body by JS) ── */
+.mobile-nav-overlay{
+  display:none;
+  position:fixed;
+  top:83px;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:9999;
+  background:rgba(15,20,22,.98);
+  flex-direction:column;
+  padding:8px 0 40px;
+  overflow-y:auto;
+}
+.mobile-nav-overlay.open{ display:flex; }
+.mobile-nav-overlay a{
+  display:block;
+  font-family:'Syncopate', sans-serif;
+  font-size:.9rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.75);
+  padding:22px 28px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  text-decoration:none;
+  transition:color .2s;
+}
+.mobile-nav-overlay a:hover{ color:var(--white); }
+
 @media (max-width: 760px){
-  .nav-links{
-    display:none;
-  }
+  .nav-burger{ display:flex; }
+  .nav-links{ display:none; }
 
   .brand-logo-horizontal{
     height:38px;
@@ -750,6 +798,9 @@ a{
   .footer-links-col{
     text-align:center;
     align-items:center;
+  }
+  .footer-social{
+    justify-content:center;
   }
 
   .footer-brand-col p{
@@ -2092,13 +2143,16 @@ a{
   .contact-main-section{
     padding:70px 0 60px;
     min-height:auto;
+    overflow-x:hidden;
   }
   .cmh-white,
-  .cmh-accent{
-    font-size:clamp(2.4rem, 13vw, 6rem);
+  .cmh-accent,
+  .cmh-upper{
+    font-size:clamp(1.6rem, 8vw, 3.5rem) !important;
+    letter-spacing:.02em !important;
   }
   .cmh-script{
-    font-size:clamp(2.6rem, 14vw, 6.5rem);
+    font-size:clamp(1.7rem, 8.5vw, 4rem);
   }
 }
 
