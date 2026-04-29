@@ -29,9 +29,9 @@ const _BASE_NEWS = [
     color: "linear-gradient(135deg, #c8b5ff 0%, #ebe4ff 100%)", img: ""
   },
   {
-    date: "December 2025", category: "Rainoc",
+    date: "December 2025", category: "Sharpest",
     title: "First AI agent deployed.",
-    excerpt: "Rainoc deploys its first custom AI agent for a client organization, handling real business logic through an orchestrated LLM system at production scale.",
+    excerpt: "Sharpest deploys its first custom AI agent for a client organization, handling real business logic through an orchestrated LLM system at production scale.",
     color: "linear-gradient(135deg, #8fd8cb 0%, #dffaf4 100%)", img: ""
   },
   {
